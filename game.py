@@ -20,24 +20,25 @@ paper.pos = 100, 100
 trash = Actor("trash")
 trash.pos = 100, 100
 
+main_screen = Actor("mainmenu")
+over_screen = Actor("gameover")
 def start_timer():
     clock.schedule(time_up, 30.0)
 
 
 def draw():
     if game_over:
-        screen.fill("blue")
-        screen.draw.text("Final Score: " + str(score), topleft = (10,10), fontsize=100)
+        over_screen.draw()
+        screen.draw.text("Total Score: " + str(score), color="black" , topright = (780,10), fontsize=50)
     elif game_menu:
-        screen.fill("black")
-        screen.draw.text("Press Space to Start" , topleft = (10,10), fontsize=100)
+        main_screen.draw()
     else:
         screen.blit(bg, (0,0))
         jim.draw()
         can.draw()
         paper.draw()
         trash.draw()
-        screen.draw.text("Score: " + str(score), color="black", topleft=(10,10), fontsize=50)
+        screen.draw.text("Trash Collected: " + str(score), color="black", topleft=(10,10), fontsize=50)
 
 def place_can():
     can.x = randint(50, (WIDTH - 20))
@@ -61,6 +62,7 @@ def time_up():
 
 def update():
     global game_menu
+    global game_over
     global score
 
     if game_menu:
@@ -68,6 +70,12 @@ def update():
         if keyboard.space:
             game_menu = False
             start_timer()
+    elif game_over:
+        if keyboard[keys.SPACE]:
+            score = 0
+            game_menu = True  
+            game_over = False
+    
 
     else:
         if keyboard.left:
