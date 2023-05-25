@@ -3,6 +3,7 @@ from random import randint
 WIDTH = 800
 HEIGHT = 512
 score = 0
+high_score = 0
 game_over = False
 game_menu = True
 
@@ -22,6 +23,11 @@ trash.pos = 100, 100
 
 main_screen = Actor("mainmenu")
 over_screen = Actor("gameover")
+
+music.play('lobbymusic')
+
+
+
 def start_timer():
     clock.schedule(time_up, 30.0)
 
@@ -29,16 +35,19 @@ def start_timer():
 def draw():
     if game_over:
         over_screen.draw()
-        screen.draw.text("Total Score: " + str(score), color="black" , topright = (780,10), fontsize=50)
+        screen.draw.text("Total Score: " + str(score), color="white", topright=(780, 10), fontsize=40)
+        screen.draw.text("High Score: " + str(high_score), color="white", topright=(780, 60), fontsize=30)
     elif game_menu:
         main_screen.draw()
     else:
-        screen.blit(bg, (0,0))
+        screen.blit(bg, (0, 0))
         jim.draw()
         can.draw()
         paper.draw()
         trash.draw()
-        screen.draw.text("Trash Collected: " + str(score), color="black", topleft=(10,10), fontsize=50)
+        screen.draw.text("Trash Collected: " + str(score), color="black", topleft=(10, 10), fontsize=50)
+        screen.draw.text("High Score: " + str(high_score), color="black", topright=(780, 10), fontsize=40)
+
 
 def place_can():
     can.x = randint(50, (WIDTH - 20))
@@ -57,7 +66,12 @@ def place_trash():
 
 def time_up():
     global game_over
+    global score
+    global high_score
+
     game_over = True
+    if score > high_score:
+        high_score = score
 
 
 def update():
@@ -66,16 +80,14 @@ def update():
     global score
 
     if game_menu:
-
         if keyboard.space:
             game_menu = False
             start_timer()
     elif game_over:
         if keyboard[keys.SPACE]:
             score = 0
-            game_menu = True  
+            game_menu = True
             game_over = False
-    
 
     else:
         if keyboard.left:
@@ -92,21 +104,24 @@ def update():
         if can_collected:
             score = score + 1
             place_can()
+            sounds.effects.play()
 
         paper_collected = jim.colliderect(paper)
 
         if paper_collected:
             score = score + 1
             place_paper()
+            sounds.effects.play()
 
         trash_collected = jim.colliderect(trash)
 
         if trash_collected:
             score = score + 1
             place_trash()
-
+            sounds.effects.play()
 
 
 place_can()
 place_paper()
 place_trash()
+
